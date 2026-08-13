@@ -49,7 +49,7 @@ class Buttons:
                     icon_custom_emoji_id=Emoji.CROWN,
                 ) if ow_id else InlineKeyboardButton(
                     "👑 ᴄʀᴇᴀᴛᴏʀ",
-                    url="https://t.me/NubDockerbot",
+                    url="https://t.me/alexzpy",
                     style=ButtonStyle.DEFAULT,
                     icon_custom_emoji_id=Emoji.CROWN,
                 ),
@@ -146,7 +146,7 @@ class Buttons:
             [
                 InlineKeyboardButton(
                     "🤖 ᴏᴜʀ ʙᴏᴛs",
-                    url="https://t.me/+FbIuEWrOYlEwYzM1",
+                    url="https://t.me/join_peko",
                     style=ButtonStyle.PRIMARY,
                     icon_custom_emoji_id=Emoji.USER,
                 )

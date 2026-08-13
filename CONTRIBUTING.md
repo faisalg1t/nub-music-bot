@@ -78,7 +78,7 @@ python3 main.py
 
 ## Need Help?
 
-- Join the Telegram group: https://t.me/nub_coder_s
+- Join the Telegram group: https://t.me/join_peko
 - Open an issue with your question
 - Check existing issues and PRs first
 
