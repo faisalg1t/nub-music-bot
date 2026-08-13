@@ -1,10 +1,10 @@
- # nub-music-bot
+ # peko-music-bot
 
-[![License](https://img.shields.io/github/license/nub-coders/nub-music-bot?color=0f766e)](LICENSE)
+[![License](https://img.shields.io/github/license/faisalg1t/peko-music-bot?color=0f766e)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
-[![Issues](https://img.shields.io/github/issues/nub-coders/nub-music-bot?color=0f766e)](https://github.com/nub-coders/nub-music-bot/issues)
-[![Pull Requests](https://img.shields.io/github/issues-pr/nub-coders/nub-music-bot?color=0f766e)](https://github.com/nub-coders/nub-music-bot/pulls)
-[![Last Commit](https://img.shields.io/github/last-commit/nub-coders/nub-music-bot)](https://github.com/nub-coders/nub-music-bot/commits/main)
+[![Issues](https://img.shields.io/github/issues/faisalg1t/peko-music-bot?color=0f766e)](https://github.com/faisalg1t/peko-music-bot/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/faisalg1t/peko-music-bot?color=0f766e)](https://github.com/faisalg1t/peko-music-bot/pulls)
+[![Last Commit](https://img.shields.io/github/last-commit/faisalg1t/peko-music-bot)](https://github.com/faisalg1t/peko-music-bot/commits/main)
 
  Telegram music/voice-chat bot for streaming audio (and video) into group voice chats.
 
@@ -63,8 +63,8 @@
  1. Clone the repo:
 
  ```bash
- git clone https://github.com/nub-coders/nub-music-bot.git
- cd nub-music-bot
+ git clone https://github.com/faisalg1t/peko-music-bot.git
+ cd peko-music-bot
  ```
 
  2. Install dependencies:
@@ -141,9 +141,9 @@
 
  Deploy
 ------
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/nub-coders/nub-music-bot)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/faisalg1t/peko-music-bot)
 
-[![Deploy to Halvo](https://halvo.nubcoders.com/deploy/button.svg)](https://app.nubcoders.com/deploy?template=https://github.com/nub-coders/nub-music-bot)
+[![Deploy to Halvo](https://halvo.nubcoders.com/deploy/button.svg)](https://app.nubcoders.com/deploy?template=https://github.com/faisalg1t/peko-music-bot)
 
 - A `Procfile` and `app.json` are included for easy Heroku deployment (see repository root).
 
@@ -157,6 +157,6 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 
  Credits
  -------
- Developed by the <img src="https://raw.githubusercontent.com/nub-coders/nub-coders/refs/heads/main/client/public/logo.svg" height="20" align="center" /> Nub Coders community.
+ Developed by the <img src="https://raw.githubusercontent.com/faisalg1t/faisalg1t/refs/heads/main/client/public/logo.svg" height="20" align="center" /> Nub Coders community.
 
  For detailed configuration, inspect `config.py` and `app.json` in the project root.
