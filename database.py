@@ -1,5 +1,5 @@
 """
-Async MongoDB database handler for nub-music-bot
+Async MongoDB database handler for peko-music-bot
 """
 import asyncio
 import inspect

@@ -157,6 +157,6 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 
  Credits
  -------
- Developed by the <img src="https://raw.githubusercontent.com/faisalg1t/faisalg1t/refs/heads/main/client/public/logo.svg" height="20" align="center" /> Nub Coders community.
+ Developed by the <img src="https://raw.githubusercontent.com/faisalg1t/faisalg1t/refs/heads/main/client/public/logo.svg" height="20" align="center" /> Peko community.
 
  For detailed configuration, inspect `config.py` and `app.json` in the project root.

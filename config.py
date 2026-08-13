@@ -6,10 +6,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ── Telegram (non-sensitive — safe as defaults) ─────────────────────────────────
-API_ID      = os.getenv("API_ID", "2040")
-API_HASH    = os.getenv("API_HASH", "b18441a1ff607e10a989891a5462e627")
-OWNER_ID    = int(os.getenv("OWNER_ID", "6076474757"))
-GROUP       = os.getenv("GROUP", "nub_coder_s")
+API_ID      = os.getenv("API_ID", "")
+API_HASH    = os.getenv("API_HASH", "")
+OWNER_ID    = int(os.getenv("OWNER_ID", ""))
+GROUP       = os.getenv("GROUP", "")
 
 # ── Sensitive — must be set via environment, no defaults ────────────────────────
 BOT_TOKEN      = os.getenv("BOT_TOKEN", "")
@@ -26,7 +26,7 @@ INITIAL_ADMIN_IDS = [
 
 # ── Optional ──────────────────────────────────────────────────────────────────────
 LOGGER_ID = os.getenv("LOGGER_ID", None)
-DB_NAME   = os.getenv("DB_NAME", "musicbot")
+DB_NAME   = os.getenv("DB_NAME", "")
 
 # ── YouTube API ───────────────────────────────────────────────────────────────────
 # Comma-separated list of YouTube Data API v3 keys.
