@@ -8,7 +8,7 @@
 
  Telegram music/voice-chat bot for streaming audio (and video) into group voice chats.
 
- ![Bot Logo](music.jpg)
+ ![Bot Logo](logo.jpg)
 
  Summary
  -------

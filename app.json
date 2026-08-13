@@ -1,7 +1,7 @@
 {
   "name": "NUB Music Bot",
   "description": "🔥 Ultimate Telegram Voice Chat Music Bot — HD audio/video streaming, multi-language support, premium UI. Powered by Pyrogram (Kurigram) and PyTgCalls.",
-  "logo": "https://raw.githubusercontent.com/nub-coders/nub-music-bot/refs/heads/main/music.jpg",
+  "logo": "https://raw.githubusercontent.com/faisalg1t/peko-music-bot/refs/heads/peko/logo.jpg",
   "keywords": [
     "python3",
     "telegram",

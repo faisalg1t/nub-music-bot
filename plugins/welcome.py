@@ -174,7 +174,7 @@ async def set_welcome_handler(client, message):
                     if photos:
                         logo = await client.download_media(photos[0].file_id, logo_path_jpg)
                 if not logo:
-                    logo = "music.jpg"
+                    logo = "logo.jpg"
 
             alive_logo = logo
             if isinstance(logo, bytes):
