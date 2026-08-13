@@ -17,7 +17,7 @@ Thanks for your interest! nub-music-bot is a Telegram music bot built on Pyrogra
 
 ```bash
 # Clone the repo
-git clone https://github.com/nub-coders/nub-music-bot.git
+git clone https://github.com/faisalg1t/peko-music-bot.git
 cd nub-music-bot
 
 # Install dependencies
