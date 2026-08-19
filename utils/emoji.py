@@ -1,12 +1,10 @@
 """
 Premium Custom Emoji IDs
-Curated from the following Telegram emoji packs:
-  - L4EVector001_by_fStikBot
-  - CenterOfEmoji980633
-  - sticks_787a5_by_TgEmodziBot
+Curated from Telegram emoji packs:
+  - NewsEmoji (https://t.me/addemoji/NewsEmoji)
+  - TgAndroidIcons (https://t.me/addemoji/TgAndroidIcons)
+  - EmojiStatus (https://t.me/addemoji/EmojiStatus)
   - DMJUnigramAnimationEmoji
-  - EmojiStatus
-  - TgAndroidIcons
 
 Usage in messages:
     from pyrogram import enums
@@ -31,7 +29,7 @@ class Emoji:
     MUSIC_NOTES    = 5915480455603295660   # 🎶  TgAndroidIcons
     HEADPHONES     = 6007938409857815902   # 🎧  TgAndroidIcons
     MIC            = 5897554554894946515   # 🎤  TgAndroidIcons
-    BROADCAST      = 5771695636411847302   # 📢  TgAndroidIcons
+    BROADCAST      = 5424818078833715060   # 📢  NewsEmoji
     PLAY           = 5775981206319402773   # 🎞  TgAndroidIcons
     SKIP           = 5875506366050734240   # ➡️  TgAndroidIcons
     RESUME         = 5775981206319402773   # 🎞  TgAndroidIcons
@@ -86,12 +84,21 @@ class Emoji:
     LINK           = 5778586619380503542   # 🔗  TgAndroidIcons
     TOOLS          = 5988023995125993550   # 🛠   TgAndroidIcons
     KANG           = 5814690801665446789   # 🎨  TgAndroidIcons
-    SUDO           = 5807868868886009920   # 👑  EmojiStatus  (reuse crown)
+    SUDO           = 5807868868886009920   # 👑  EmojiStatus
     OWNER          = 5807868868886009920   # 👑  EmojiStatus
-    BROADCAST_BTN  = 5771695636411847302   # 📢  TgAndroidIcons
+    BROADCAST_BTN  = 5424818078833715060   # 📢  NewsEmoji
     AUTH_ICON      = 6005570495603282482   # 🔑  TgAndroidIcons
     BLOCKLIST_ICON = 5877413297170419326   # 🚫  TgAndroidIcons
     HELP           = 5879785854284599288   # ℹ️  TgAndroidIcons
+
+    # ── News & Announcements (NewsEmoji) ──────────────────────────────────────
+    NEWS_BREAKING  = 5456140674028019486   # 🚨  NewsEmoji
+    NEWS_URGENT    = 5224607267797606837   # ⚡  NewsEmoji
+    NEWS_ALERT     = 5447644880824181073   # ⚠️  NewsEmoji
+    NEWS_BROADCAST = 5424818078833715060   # 📢  NewsEmoji
+    NEWS_BELL      = 5458603043203327669   # 🔔  NewsEmoji
+    NEWS_PIN       = 5397782960512444700   # 📌  NewsEmoji
+    NEWS_STATS     = 5231200819986047254   # 📊  NewsEmoji
 
     # ── Digits & Tens ─────────────────────────────────────────────────────────
     DIGITS = {
@@ -179,6 +186,14 @@ class EmojiTag:
     SUDO           = f'<emoji id="{Emoji.SUDO}">👑</emoji>'
     OWNER          = f'<emoji id="{Emoji.OWNER}">⚙️</emoji>'
     HELP           = f'<emoji id="{Emoji.HELP}">ℹ️</emoji>'
+
+    NEWS_BREAKING  = f'<emoji id="{Emoji.NEWS_BREAKING}">🚨</emoji>'
+    NEWS_URGENT    = f'<emoji id="{Emoji.NEWS_URGENT}">⚡</emoji>'
+    NEWS_ALERT     = f'<emoji id="{Emoji.NEWS_ALERT}">⚠️</emoji>'
+    NEWS_BROADCAST = f'<emoji id="{Emoji.NEWS_BROADCAST}">📢</emoji>'
+    NEWS_BELL      = f'<emoji id="{Emoji.NEWS_BELL}">🔔</emoji>'
+    NEWS_PIN       = f'<emoji id="{Emoji.NEWS_PIN}">📌</emoji>'
+    NEWS_STATS     = f'<emoji id="{Emoji.NEWS_STATS}">📊</emoji>'
 
 
 def keycaps(number):

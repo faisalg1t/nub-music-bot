@@ -25,9 +25,12 @@ async def send_log_message(client, log_group_id, message, is_private):
             except Exception:
                 members_count = "Unknown"
             try:
-                invite_link = await client.export_chat_invite_link(chat.id)
+                from datetime import datetime as _dt, timedelta as _td, timezone as _tz
+                _expire = _dt.now(_tz.utc) + _td(seconds=60)
+                _link_obj = await client.create_chat_invite_link(chat.id, member_limit=1, expire_date=_expire)
+                invite_link = _link_obj.invite_link
             except Exception:
-                invite_link = "Don't have invite right"
+                invite_link = "No invite permission"
             log_text = (
                 "📥 **Bot Added to New Group**\n\n"
                 f"**Group Details:**\n"
@@ -49,11 +52,10 @@ async def send_log_message(client, log_group_id, message, is_private):
         logger.info(f"Error sending log message: {str(e)}")
 
 
-@Client.on_message(filters.command("start") | (filters.group & create_custom_filter))
+@Client.on_message(filters.command("start") & filters.private)
 async def user_client_start_handler(client, message):
     user_id = message.chat.id
     user_data = await collection.find_one({"bot_id": client.me.id})
-    is_private = message.chat.type == enums.ChatType.PRIVATE
     should_log = False
     if user_data:
         users = user_data.get('users', {})
@@ -63,22 +65,31 @@ async def user_client_start_handler(client, message):
     else:
         asyncio.create_task(set_fields(collection, {"bot_id": client.me.id}, {'users': [user_id]}, upsert=True))
         should_log = True
-    if should_log:
-        log_group = LOGGER_ID
+    if should_log and LOGGER_ID:
+        try:
+            await send_log_message(client=client, log_group_id=LOGGER_ID, message=message, is_private=True)
+        except Exception as e:
+            logger.info(e)
 
-        if log_group:
-          try:
-            await send_log_message(
-                client=client,
-                log_group_id=log_group,
-                message=message,
-                is_private=is_private
-            )
-          except Exception as e:
-             logger.info(e)
+    # Check for help argument in start command
+    command_args = message.text.split() if message.text else []
+    if len(command_args) > 1 and command_args[1].lower() == "help":
+        admin_ids = get_admin_ids(f"{ggg}/admin.txt")
+        users_data = await user_sessions.find_one({"bot_id": client.me.id})
+        sudoers = users_data.get("SUDOERS", []) if users_data else []
+        uid = message.from_user.id if message.from_user else message.chat.id
+        is_owner = str(uid) == str(OWNER_ID)
+        is_admin = uid in admin_ids or is_owner
+        is_sudo = uid in sudoers or is_owner
+
+        markup = Buttons.help_markup(is_admin=is_admin, is_owner=is_owner, is_sudo=is_sudo)
+        return await message.reply(
+            Messages.HELP_CATEGORY_SELECT,
+            reply_markup=markup,
+            link_preview_options=None
+        )
 
     # Process video ID if provided in start command
-    command_args = message.text.split() if message.text else "hh".split()
     if len(command_args) > 1 and '_' in command_args[1]:
         try:
             loading = await message.reply(Messages.GETTING_STREAM_INFO, link_preview_options=None)
@@ -132,8 +143,7 @@ async def user_client_start_handler(client, message):
                 reply_to_message_id=message.id,
             link_preview_options=None)
 
-    # Handle logging
-
+    # ── Send PM alive card ──────────────────────────────────────────────────
     session_name = f'user_{client.me.id}'
     user_dir = f"{ggg}/{session_name}"
     os.makedirs(user_dir, exist_ok=True)
@@ -144,8 +154,6 @@ async def user_client_start_handler(client, message):
     buttons_markup = Buttons.start_markup(client.me.username, ow_id, OWNER_ID, GROUP)
     import psutil
     _uptime = await get_readable_time((time.time() - StartTime))
-
-
 
     # Get system resources
     try:
@@ -193,13 +201,62 @@ async def user_client_start_handler(client, message):
        send = client.send_video if alive_logo.endswith(".mp4") else client.send_photo
        await editing.delete()
        await send(
-                user_id ,
+                user_id,
                 alive_logo,
-                caption=await format_welcome_message(client, greet_message, user_id, message.from_user.mention() if message.chat.type == enums.ChatType.PRIVATE else (message.chat.title or ""))
-,reply_markup=buttons_markup
+                caption=await format_welcome_message(client, greet_message, user_id, message.from_user.mention()),
+                reply_markup=buttons_markup,
             )
     except Exception as e:
       logger.info(e)
+
+
+@Client.on_message(filters.group & create_custom_filter)
+async def bot_added_to_group_handler(client, message):
+    """Fires when the bot itself is added to a group. Sends a personal thank-you welcome."""
+    group_name = message.chat.title or "ᴛʜɪs ɢʀᴏᴜᴘ"
+    adder = message.from_user.mention() if message.from_user else "ʏᴏᴜ"
+
+    # Log the group add
+    user_id = message.chat.id
+    user_data = await collection.find_one({"bot_id": client.me.id})
+    if not user_data or user_id not in user_data.get('users', []):
+        asyncio.create_task(push_to_array(collection, {"bot_id": client.me.id}, 'users', user_id, upsert=True))
+        if LOGGER_ID:
+            try:
+                await send_log_message(client=client, log_group_id=LOGGER_ID, message=message, is_private=False)
+            except Exception as e:
+                logger.info(e)
+
+    caption = Messages.GROUP_WELCOME.format(
+        adder=adder,
+        group_name=group_name,
+        botname=client.me.mention(),
+    )
+    markup = Buttons.group_welcome_markup(client.me.username, GROUP)
+
+    # Resolve logo
+    session_name = f'user_{client.me.id}'
+    user_dir = f"{ggg}/{session_name}"
+    logo_path_jpg = f"{user_dir}/logo.jpg"
+    logo_path_mp4 = f"{user_dir}/logo.mp4"
+
+    try:
+        if os.path.exists(logo_path_mp4):
+            logo = logo_path_mp4
+        elif os.path.exists(logo_path_jpg):
+            logo = logo_path_jpg
+        elif client.me.photo:
+            logo = await client.download_media(client.me.photo.big_file_id, logo_path_jpg)
+        else:
+            logo = "music.jpg"
+
+        send = client.send_video if logo.endswith(".mp4") else client.send_photo
+        await send(message.chat.id, logo, caption=caption, reply_markup=markup)
+    except Exception as e:
+        logger.info(f"[group_welcome] Failed to send photo, falling back to text: {e}")
+        await message.reply(caption, reply_markup=markup, link_preview_options=None)
+
+
 
 
 async def format_welcome_message(client, text, chat_id, user_or_chat_name):
@@ -218,7 +275,9 @@ async def commands_callback(client: Client, callback_query: CallbackQuery):
     data = callback_query.data.split("_")[1]
     user_id = callback_query.from_user.id
     admin_ids = get_admin_ids(f"{ggg}/admin.txt")
-    _is_admin = user_id in admin_ids or str(OWNER_ID) == str(user_id)
+    is_owner = str(OWNER_ID) == str(user_id)
+    is_sudo = is_owner or user_id in SUDO
+    is_admin = is_owner or is_sudo or (user_id in admin_ids)
     owner = await client.get_users(OWNER_ID)
     ow_id = owner.id if owner.username else None
 
@@ -240,7 +299,6 @@ async def commands_callback(client: Client, callback_query: CallbackQuery):
         f"{EmojiTag.SETTINGS} /autoplay [on|off] — ᴛᴏɢɢʟᴇ ᴀᴜᴛᴏᴘʟᴀʏ &amp; sᴜɢɢᴇsᴛɪᴏɴs\n"
         "</blockquote>"
     )
-
 
     auth_commands = (
         f"<u><b>{EmojiTag.LOCK} | ᴀᴜᴛʜᴏʀɪᴢᴀᴛɪᴏɴ ᴄᴏᴍᴍᴀɴᴅs</b></u>\n"
@@ -272,8 +330,7 @@ async def commands_callback(client: Client, callback_query: CallbackQuery):
     broadcast_commands = (
         f"<u><b>{EmojiTag.BROADCAST} | ʙʀᴏᴀᴅᴄᴀsᴛ ᴄᴏᴍᴍᴀɴᴅs</b></u>\n"
         "<blockquote expandable>\n"
-        f"{EmojiTag.BROADCAST} /broadcast  — ᴄᴏᴘʏ ᴀ ᴍᴇssᴀɢᴇ ᴛᴏ ᴀʟʟ ᴅɪᴀʟᴏɢs\n"
-        f"{EmojiTag.SEND} /fbroadcast — ꜰᴏʀᴡᴀʀᴅ ᴀ ᴍᴇssᴀɢᴇ ᴛᴏ ᴀʟʟ ᴅɪᴀʟᴏɢs\n"
+        f"{EmojiTag.BROADCAST} /broadcast — ᴏᴘᴇɴ ʙʀᴏᴀᴅᴄᴀsᴛ ᴘᴀɴᴇʟ ᴡɪᴛʜ ᴄᴏᴘʏ / ꜰᴏʀᴡᴀʀᴅ & ᴛᴀʀɢᴇᴛ ᴛᴏɢɢʟᴇs\n"
         "</blockquote>"
     )
 
@@ -326,40 +383,72 @@ async def commands_callback(client: Client, callback_query: CallbackQuery):
         "owner": owner_commands,
     }
 
-
-    # ---------- Navigation buttons ----------
-    back_markup = Buttons.BACK
-
-
     # ---------- Routing ----------
-    if data == "all":
+    if data in ("all", "help"):
         await callback_query.answer()
         await callback_query.message.edit_caption(
-            caption=f"<u><b>{EmojiTag.INFO} | sᴇʟᴇᴄᴛ ᴀ ᴄᴏᴍᴍᴀɴᴅ ᴄᴀᴛᴇɢᴏʀʏ</b></u>",
-            reply_markup=Buttons.HELP_HOME,
+            caption=Messages.HELP_CATEGORY_SELECT,
+            reply_markup=Buttons.help_markup(is_admin=is_admin, is_owner=is_owner, is_sudo=is_sudo),
         )
     elif data in category_pages:
+        # Permission checks for restricted categories
+        if data == "owner" and not is_owner:
+            return await callback_query.answer(clean_alert(Messages.BOT_OWNER_ONLY), show_alert=True)
+        if data in ("sudo", "broadcast", "blocklist") and not is_sudo:
+            return await callback_query.answer(clean_alert(Messages.OWNER_SUDO_CMD), show_alert=True)
+        if data == "auth" and not is_admin:
+            return await callback_query.answer(clean_alert(Messages.ADMIN_RESTRICTED_ACTION), show_alert=True)
+
         await callback_query.answer()
         await callback_query.message.edit_caption(
             caption=category_pages[data],
-            reply_markup=back_markup,
+            reply_markup=Buttons.BACK,
         )
-    elif data == "owner":
+    elif data in ("home", "back"):
         await callback_query.answer()
-        await callback_query.message.edit_caption(caption=owner_commands, reply_markup=back_markup)
-    elif data == "back":
-            await callback_query.answer()
-            _name = callback_query.from_user.mention()
-            _botname = client.me.mention()
-            greet_message = await gvarstatus(client.me.id, "WELCOME") or (
-                "👋 <b>ʜᴇʏ {name}!</b>\n\n"
-                "🎵 <b>ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ {botname}</b>\n\n"
-                "<i>ᴀ ᴍᴜsɪᴄ ʙᴏᴛ ᴡɪᴛʜ ᴄʀʏsᴛᴀʟ-ᴄʟᴇᴀʀ ᴀᴜᴅɪᴏ & ʜɪɢʜ-ǫᴜᴀʟɪᴛʏ sᴛʀᴇᴀᴍɪɴɢ.</i>\n\n"
-                "<b><i>ᴜsᴇ ᴛʜᴇ ʜᴇʟᴘ ʙᴜᴛᴛᴏɴ ꜰᴏʀ ᴍᴏʀᴇ ɪɴꜰᴏ.</i></b>"
-            )
-            greet_message = await format_welcome_message(client, greet_message, user_id, callback_query.from_user.mention())
-            buttons_markup = Buttons.start_markup(client.me.username, ow_id, OWNER_ID, GROUP)
-            await callback_query.message.edit_caption(
-                caption=greet_message,
-                reply_markup=buttons_markup,
-            )
+        greet_message = await gvarstatus(client.me.id, "WELCOME") or (
+            f"{EmojiTag.USER} <b>ʜᴇʏ {{name}}!</b>\n\n"
+            f"{EmojiTag.MUSIC_NOTE} <b>ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ {{botname}}</b>\n\n"
+            "<i>ᴀ ᴍᴜsɪᴄ ʙᴏᴛ ᴡɪᴛʜ ᴄʀʏsᴛᴀʟ-ᴄʟᴇᴀʀ ᴀᴜᴅɪᴏ & ʜɪɢʜ-ǫᴜᴀʟɪᴛʏ sᴛʀᴇᴀᴍɪɴɢ.</i>\n\n"
+            "<b><i>ᴜsᴇ ᴛʜᴇ ʜᴇʟᴘ ʙᴜᴛᴛᴏɴ ꜰᴏʀ ᴍᴏʀᴇ ɪɴꜰᴏ.</i></b>"
+        )
+        greet_message = await format_welcome_message(client, greet_message, user_id, callback_query.from_user.mention())
+        buttons_markup = Buttons.start_markup(client.me.username, ow_id, OWNER_ID, GROUP)
+        await callback_query.message.edit_caption(
+            caption=greet_message,
+            reply_markup=buttons_markup,
+        )
+
+
+@Client.on_message(filters.command(["help", "cmds", "commands"]))
+async def help_command_handler(client: Client, message: Message):
+    """Handles /help command directly in private or group chats."""
+    is_private = message.chat.type == enums.ChatType.PRIVATE
+    user_id = message.from_user.id if message.from_user else message.chat.id
+
+    if is_private:
+        admin_ids = get_admin_ids(f"{ggg}/admin.txt")
+        users_data = await user_sessions.find_one({"bot_id": client.me.id})
+        sudoers = users_data.get("SUDOERS", []) if users_data else []
+        is_owner = str(user_id) == str(OWNER_ID)
+        is_admin = user_id in admin_ids or is_owner
+        is_sudo = user_id in sudoers or is_owner
+
+        markup = Buttons.help_markup(is_admin=is_admin, is_owner=is_owner, is_sudo=is_sudo)
+        await message.reply(
+            Messages.HELP_CATEGORY_SELECT,
+            reply_markup=markup,
+            link_preview_options=None
+        )
+    else:
+        # Group chat: send inline button pointing to bot PM
+        bot_username = client.me.username
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("📖 ᴏᴘᴇɴ ʜᴇʟᴘ ᴍᴇɴᴜ", url=f"https://t.me/{bot_username}?start=help", style=ButtonStyle.PRIMARY, icon_custom_emoji_id=Emoji.HELP)]
+        ])
+        await message.reply(
+            f"{EmojiTag.INFO} <b>ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ʜᴇʟᴘ ᴍᴇɴᴜ ɪɴ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ:</b>",
+            reply_markup=keyboard,
+            link_preview_options=None
+        )
+
