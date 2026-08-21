@@ -66,14 +66,14 @@ class Buttons:
                     icon_custom_emoji_id=Emoji.CROWN,
                 ) if ow_id else InlineKeyboardButton(
                     "👑 ᴄʀᴇᴀᴛᴏʀ",
-                    url="https://t.me/NubDockerbot",
+                    url="https://t.me/alexzpy",
                     style=ButtonStyle.DEFAULT,
                     icon_custom_emoji_id=Emoji.CROWN,
                 ),
                 InlineKeyboardButton("💬 sᴜᴘᴘᴏʀᴛ ᴄʜᴀᴛ", url=f"https://t.me/{GROUP}", style=ButtonStyle.DEFAULT, icon_custom_emoji_id=Emoji.CHAT),
             ],
             [
-                InlineKeyboardButton("🌐 ʀᴇᴘᴏ", url="https://github.com/nub-coders/nub-music-bot", style=ButtonStyle.DEFAULT, icon_custom_emoji_id=Emoji.REPO),
+                InlineKeyboardButton("🌐 Web", url="https://pekobot.fun", style=ButtonStyle.DEFAULT, icon_custom_emoji_id=Emoji.REPO),
             ],
         ]
         return InlineKeyboardMarkup(buttons)
@@ -188,7 +188,7 @@ class Buttons:
             [
                 InlineKeyboardButton(
                     "🤖 ᴏᴜʀ ʙᴏᴛs",
-                    url="https://t.me/+FbIuEWrOYlEwYzM1",
+                    url="https://t.me/join_peko",
                     style=ButtonStyle.PRIMARY,
                     icon_custom_emoji_id=Emoji.USER,
                 )

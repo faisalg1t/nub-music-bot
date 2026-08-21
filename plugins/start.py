@@ -181,7 +181,7 @@ async def user_client_start_handler(client, message):
        elif os.path.exists(logo_path_jpg):
            logo = logo_path_jpg
        else:
-           logo = await gvarstatus(client.me.id, "LOGO") or (await client.download_media(client.me.photo.big_file_id, logo_path_jpg) if client.me.photo else "music.jpg")
+           logo = await gvarstatus(client.me.id, "LOGO") or (await client.download_media(client.me.photo.big_file_id, logo_path_jpg) if client.me.photo else "logo.jpg")
 
        alive_logo = logo
        if type(logo) is bytes:

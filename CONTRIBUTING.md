@@ -1,6 +1,6 @@
-# Contributing to nub-music-bot
+# Contributing to peko-music-bot
 
-Thanks for your interest! nub-music-bot is a Telegram music bot built on Pyrogram and pytgcalls for streaming audio into voice chats.
+Thanks for your interest! peko-music-bot is a Telegram music bot built on Pyrogram and pytgcalls for streaming audio into voice chats.
 
 ## Quick Start
 
@@ -17,8 +17,8 @@ Thanks for your interest! nub-music-bot is a Telegram music bot built on Pyrogra
 
 ```bash
 # Clone the repo
-git clone https://github.com/nub-coders/nub-music-bot.git
-cd nub-music-bot
+git clone https://github.com/faisalg1t/peko-music-bot.git
+cd peko-music-bot
 
 # Install dependencies
 pip install -r requirements.txt
@@ -78,7 +78,7 @@ python3 main.py
 
 ## Need Help?
 
-- Join the Telegram group: https://t.me/nub_coder_s
+- Join the Telegram group: https://t.me/join_peko
 - Open an issue with your question
 - Check existing issues and PRs first
 
